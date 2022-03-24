@@ -1,5 +1,6 @@
 ## TITLE 
 Parallelizing Kruskal's Algorithm and Boruvka's Algorithm for Finding Minimum Spanning Trees
+
 By Sarayu Namineni and Ishika Saxena
 
 ## SUMMARY
