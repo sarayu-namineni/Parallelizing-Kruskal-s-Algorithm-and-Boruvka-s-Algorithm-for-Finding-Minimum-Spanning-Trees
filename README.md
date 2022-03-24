@@ -63,13 +63,13 @@ Particularly, we feel that by these above deliverables and by showcasing that a 
 
 In addition to analyzing speedups on different numbers of threads, we also are hoping to learn more about the effect of parallelization on different input graph types and connecting that to how we can map the workload to shared graph and union find data structures in our parallel implementations of finding a minimum spanning tree, especially as many threads may be accessing and modifying these structures at once.
 
-## PLATFORM CHOICE:
+## PLATFORM CHOICE
 
 We will be using the C++ programming language and the OpenMP parallel programming framework to implement our algorithms. These languages/frameworks are good for our needs, as C++, for example, allows us to implement the sequential versions of our algorithms and OpenMP allows us to directly modify our C++ code to employ parallelization techniques using different numbers of threads. 
 
 We will use the GHC and/or the PSC machines to test our implementation and run it on different numbers of threads to obtain our performance metrics. If testing with a large number of cores, it makes sense for us to use PSC machines. Further, we’ve used the PSC machines for a prior homework assignment involving OpenMP. 
 
-## SCHEDULE:
+## SCHEDULE
 
 <table>
   <tr>
@@ -146,7 +146,7 @@ We will use the GHC and/or the PSC machines to test our implementation and run i
   </tr>
 </table>
 
-## CITATIONS:
+## CITATIONS
 [1] (2021). Textbook (III): Part 4: Minimum Spanning Trees. Diderot: 15210. 
 https://www.diderot.one/courses/89/books/352/chapter/4581 
 
