@@ -1,4 +1,4 @@
-# Parallelizing-Kruskal-s-Algorithm-and-Boruvka-s-Algorithm-for-Finding-Minimum-Spanning-Trees
+# Parallelizing Kruskal's Algorithm and Boruvka's Algorithm for Finding Minimum Spanning Trees
 ## SUMMARY
 
 In our project, we plan to parallelize minimum spanning tree algorithms by, first, parallelizing Kruskal’s algorithm and, then, parallelizing Boruvka’s algorithm. In implementing Kruskal’s algorithm, we plan to parallelize the sorting step, and in implementing Boruvka’s algorithm, we plan to explore and utilize tree and/or star contraction techniques; in both, we plan to use C++ and OpenMP to attempt to optimize performance effectively and improve speedup from the sequential to parallel version. After implementation, we plan to compare the aforementioned approaches via running them on various sized graphs with random weights and measuring and analyzing performance and speedup on various numbers of threads on the GHC and/or PSC machines.
