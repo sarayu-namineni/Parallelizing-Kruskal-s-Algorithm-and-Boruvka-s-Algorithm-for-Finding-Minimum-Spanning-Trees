@@ -31,11 +31,11 @@ Boruvka’s algorithm offers more opportunities for parallelism along with more 
 
 It is unclear what mapping of workload to processors would be most efficient and scalable. One idea we have is to assign different connected components to each processor, although the number and size of these components is dependent on the edges that get contracted first in our graph. We anticipate having high contention over our shared data structures, such as our graph representation and our union find structure, unless we can map our accesses within our data structures to these different processors. 
 
-## RESOURCES:
+## RESOURCES
 
 We will be implementing Kruskal’s and Boruvka’s algorithms from scratch in C++ and OpenMP. We will refer to the 15-210 lecture notes (cited at bottom of proposal) for overarching descriptions of the algorithms. We will be testing our implementation on the GHC and/or PSC machines, which we already have access to.
 
-## GOALS AND DELIVERABLES:
+## GOALS AND DELIVERABLES
 
 ### Preliminary Goals (“75%”)
 
