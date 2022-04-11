@@ -85,37 +85,37 @@ We will use the GHC and/or the PSC machines to test our implementation and run i
   <tr>
     <td> 3/23
     </td>
-    <td> Project proposal
+    <td> Project proposal (Completed)
     </td>
   </tr>
   <tr>
    <td>3/28
    </td>
-   <td>Formulate graph representation and APIs for data structures
+   <td>Formulate graph representation and APIs for data structures (Completed)
    </td>
   </tr>
   <tr>
    <td>3/28
    </td>
-   <td>Implement a graph input generator; Try generating different types of graphs
+   <td>Implement a graph input generator; Try generating different types of graphs (Completed)
    </td>
   </tr>
   <tr>
    <td>4/4
    </td>
-   <td>Implement a sequential version of Kruskal’s algorithm
+   <td>Implement a sequential version of Kruskal’s algorithm (Completed)
    </td>
   </tr>
   <tr>
    <td>4/11
    </td>
-   <td>Parallelize the sorting step in Kruskal’s algorithm
+   <td>Parallelize the sorting step in Kruskal’s algorithm (Completed)
    </td>
   </tr>
   <tr>
    <td>4/11
    </td>
-   <td>Benchmark and profile Kruskal’s algorithm
+   <td>Implement a sequential version of Boruvka’s algorithm (Completed)
    </td>
   </tr>
   <tr>
@@ -127,7 +127,7 @@ We will use the GHC and/or the PSC machines to test our implementation and run i
   <tr>
    <td>4/15
    </td>
-   <td>Implement a sequential version of Boruvka’s algorithm
+   <td>Benchmark and profile Kruskal’s algorithm
    </td>
   </tr>
   <tr>
