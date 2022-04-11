@@ -1,10 +1,10 @@
 /* Compile: gcc -o generate-input generate-input.c
- * Usage: ./generate-input -n [number of vertices] -m [number of edges] -w
- * [maximum edge weight]
+ * Usage: ./generate-input -n <number of vertices> -m <number of edges> -w
+ * <maximum edge weight>
  *
  * Given valid arguments, this program generates a graph with the given number
  * of vertices and edges with weights that do not exceed the given maximum. The
- * graph it generates is written to the file output_n_m_w.txt where n, m, and w
+ * graph it generates is written to the file input_n_m_w.txt where n, m, and w
  * are the above command-line arguments. The output file consists of a list of
  * edges. Each edge is a represented by its two vertex endpoints and its weight.
  *
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 				maxWeight = atoi(optarg);
 				break;
 			default:
-				fprintf(stderr, "Usage: %s [-n verts] [-m edges] [-w maxWeight]\n", argv[0]);
+				fprintf(stderr, "Usage: %s -n <number of vertices> -m <number of edges> -w <maximum edge weight>\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 	}
@@ -68,11 +68,16 @@ int main(int argc, char *argv[]){
 	}
 
 	char outputFilename[80];
-	sprintf(outputFilename, "output_%d_%d_%d.txt", n, m, maxWeight);
+	sprintf(outputFilename, "input_%d_%d_%d.txt", n, m, maxWeight);
 
 	FILE *output = fopen(outputFilename, "w");
+	if(!output){
+		fprintf(stderr, "Unable to open output file\n");
+		exit(EXIT_FAILURE);
+	}
 
 	// write edges and weights to output file
+	fprintf(output, "%d %d %d\n", n, m, maxWeight);
 	for(int i = 0; i < n; i++){
 		for(int j = 0; j < n; j++){
 			if(adj[i*n+j] > 0){
