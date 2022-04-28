@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
 	while(numEdges < m){
 		int u = rand() % n; // chooses node between 0 and n-1
 		int v = rand() % n;
-		int w = rand() % maxWeight;
+		int w = (rand() % maxWeight) + 1;
 
 		// no self-edges, neither the forward/backward edge exists
 		if(u != v && (adj[u*n+v] == 0 && adj[v*n+u] == 0)){
