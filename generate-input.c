@@ -60,8 +60,8 @@ int main(int argc, char *argv[]){
 		int v = rand() % n;
 		int w = rand() % maxWeight;
 
-		// no self-edges
-		if(u != v){
+		// no self-edges, neither the forward/backward edge exists
+		if(u != v && (adj[u*n+v] == 0 && adj[v*n+u] == 0)){
 			adj[u*n+v] = w;
 			numEdges++;
 		}

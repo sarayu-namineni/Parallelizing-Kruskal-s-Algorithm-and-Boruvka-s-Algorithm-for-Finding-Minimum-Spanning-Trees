@@ -1,4 +1,4 @@
-/* Compile: gcc -o boruvka boruvka.c
+/* Run make
  * Usage: ./boruvka -f <filename>
  *
  */
@@ -22,6 +22,7 @@ int nsets;
 std::vector<edge> mst;
 int mstWeight;
 
+/* @brief Returns supervertex for given vertex */
 int findParent(int v){
 	if(parent[v].first == v){
 		return v;
@@ -30,6 +31,7 @@ int findParent(int v){
 	}
 }
 
+/* @brief Sets the vertex with higher rank to be the supervertex of the other */
 void unionVerts(int v1, int v2){
 	if(parent[v1].second > parent[v2].second){
 		parent[v2].first = v1;
@@ -40,10 +42,12 @@ void unionVerts(int v1, int v2){
 	}	
 }
 
+/* @brief Computes the minimum spanning tree using Boruvka's algorithm */
 void findMST(){
 	while(nsets > 1){
 		std::vector<int> cheapest(n, -1);
 
+		// Identify the cheapest edge for each vertex
 		for(int i = 0; i < m; i++){
 			int v1 = edges[i].v1;
 			int v2 = edges[i].v2;
@@ -61,6 +65,7 @@ void findMST(){
 			} 
 		}
 
+		// For each vertex, add the cheapest edge to the MST, if possible
 		for(int j = 0; j < n; j++){
 			int i = cheapest[j];
 			if(i != -1){
@@ -115,6 +120,7 @@ void readInput(char *inputFilename){
 	nsets = n;
 }
 
+/* @brief Writes MST and weight to output file */
 void writeOutput(){
 	char outputFilename[80];
 	sprintf(outputFilename, "output_%d_%d_%d.txt", n, m, maxWeight);
