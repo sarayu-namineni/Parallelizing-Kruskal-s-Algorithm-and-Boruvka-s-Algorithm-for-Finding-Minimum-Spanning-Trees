@@ -1,11 +1,13 @@
 /* Run make
- * Usage: ./boruvka -f <filename>
+ * Usage: ./boruvka -f <filename> -n <num_threads>
  *
  */
-#include<stdlib.h>
-#include<stdio.h>
-#include<unistd.h>
-#include<bits/stdc++.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <bits/stdc++.h>
+#include <omp.h>
+#include <chrono> 
 
 typedef struct edge {
 	int v1;
@@ -43,27 +45,49 @@ void unionVerts(int v1, int v2){
 }
 
 /* @brief Computes the minimum spanning tree using Boruvka's algorithm */
-void findMST(){
+void findMST(int num_threads){
 	while(nsets > 1){
 		std::vector<int> cheapest(n, -1);
+		omp_lock_t lock[n];
 
-		// Identify the cheapest edge for each vertex
-		for(int i = 0; i < m; i++){
-			int v1 = edges[i].v1;
-			int v2 = edges[i].v2;
-			int w = edges[i].w;
-
-			int pv1 = findParent(v1);
-			int pv2 = findParent(v2);
-			if(parent[pv1].first != parent[pv2].first){
-				if(cheapest[v1] == -1 || edges[cheapest[v1]].w > w){
-					cheapest[v1] = i;
-				}
-				if(cheapest[v2] == -1 || edges[cheapest[v2]].w > w){
-					cheapest[v2] = i;
-				}
-			} 
+		for(int i=0; i < n; i++){
+			omp_init_lock(&(lock[i]));
 		}
+
+		// Iterates through all the edges and updates the cheapest edges for the
+		// associated endpoints
+		#pragma omp parallel num_threads (num_threads)
+		{
+			int threadId = omp_get_thread_num();
+			for(int i = threadId % m; i < m; i += num_threads){
+				int v1 = edges[i].v1;
+				int v2 = edges[i].v2;
+				int w = edges[i].w;
+
+				int pv1 = findParent(v1);
+				int pv2 = findParent(v2);
+				if(parent[pv1].first != parent[pv2].first){
+					//#pragma omp critical
+					//{
+						omp_set_lock(&lock[v1]);
+						if(cheapest[v1] == -1 || edges[cheapest[v1]].w > w){
+							cheapest[v1] = i;
+						}
+						omp_unset_lock(&lock[v1]);
+					//}
+
+
+					//#pragma omp critical
+					//{
+						omp_set_lock(&lock[v2]);
+						if(cheapest[v2] == -1 || edges[cheapest[v2]].w > w){
+							cheapest[v2] = i;
+						}
+						omp_unset_lock(&lock[v2]);
+					//}
+				}
+			}
+		}	
 
 		// For each vertex, add the cheapest edge to the MST, if possible
 		for(int j = 0; j < n; j++){
@@ -85,6 +109,11 @@ void findMST(){
 				}
 			}
 		}
+
+		for(int i=0; i < n; i++){
+			omp_destroy_lock(&(lock[i]));
+		}
+
 	}
 }
 
@@ -141,16 +170,24 @@ void writeOutput(){
 }
 
 int main(int argc, char *argv[]){
+	using namespace std::chrono;
+	typedef std::chrono::high_resolution_clock Clock;
+	typedef std::chrono::duration<double> dsec;
+
 	int opt;
 	char *inputFilename = NULL;
+	int num_threads = 1;
 
-	while((opt = getopt(argc, argv, "f:")) != -1){
+	while((opt = getopt(argc, argv, "f:n:")) != -1){
 		switch(opt){
 			case 'f':
 				inputFilename = optarg;
 				break;
+			case 'n':
+				num_threads = atoi(optarg);
+				break;
 			default:
-				fprintf(stderr, "Usage: %s -f <filename>\n", argv[0]);
+				fprintf(stderr, "Usage: %s -f <filename> -n <num_threads>\n", argv[0]);
 				exit(EXIT_FAILURE);
 		}
 	}
@@ -161,7 +198,11 @@ int main(int argc, char *argv[]){
 	}
 
 	readInput(inputFilename);
-	findMST();
+	auto compute_start = Clock::now();
+	double compute_time = 0;
+	findMST(num_threads);
+	compute_time += duration_cast<dsec>(Clock::now() - compute_start).count();
+	printf("Computation Time: %lf.\n", compute_time);
 	writeOutput();
 
 	return 0;

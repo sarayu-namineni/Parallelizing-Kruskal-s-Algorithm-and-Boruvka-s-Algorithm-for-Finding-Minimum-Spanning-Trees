@@ -1,17 +1,14 @@
-APP_NAME=boruvka
-
-OBJS=boruvka.o
-
 CXX = g++ -m64 -std=c++11
-CXXFLAGS = -I. -O3 -Wall
+CXXFLAGS = -I. -O3 -Wall -fopenmp -Wno-unknown-pragmas
 
-default: $(APP_NAME)
+geninput: geninput.o
+	$(CXX) $(CXXFLAGS) -o $@ geninput.o
 
-$(APP_NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
-
-%.o: %.cpp
+geninput.o: geninput.cpp
 	$(CXX) $< $(CXXFLAGS) -c -o $@
 
-clean:
-	/bin/rm -rf *~ *.o $(APP_NAME)
+boruvka: boruvka.o
+	$(CXX) $(CXXFLAGS) -o $@ boruvka.o
+
+boruvka.o: boruvka.cpp
+	$(CXX) $< $(CXXFLAGS) -c -o $@
