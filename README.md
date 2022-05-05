@@ -1,3 +1,6 @@
+# Final Report
+Our final report is listed as "FINAL Report.pdf." Here is the video link to presentation: https://youtu.be/4fs-OUm6-Sw!
+
 # Proposal
 ## TITLE 
 Parallelizing Kruskal's Algorithm and Boruvka's Algorithm for Finding Minimum Spanning Trees
