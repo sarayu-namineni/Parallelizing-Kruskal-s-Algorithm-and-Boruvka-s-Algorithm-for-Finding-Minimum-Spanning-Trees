@@ -18,6 +18,8 @@
 #include<list>
 #include<map>
 #include<algorithm>
+#include<iostream>
+#include<fstream>
 
 typedef struct edge {
 	unsigned int v1;
@@ -184,22 +186,28 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	char outputFilename[80];
+	/*char outputFilename[80];
 	sprintf(outputFilename, "input_%i_%i_%d.txt", n, m, maxWeight);
 
 	FILE *output = fopen(outputFilename, "w");
 	if(!output){
 		fprintf(stderr, "Unable to open output file\n");
 		exit(EXIT_FAILURE);
-	}
+	}*/
+
+	std::ofstream output;
+	output.open ("example.txt");
+	output << n << " " << m << " " <<  maxWeight << "\n";
 
 	// write edges and weights to output file
-	fprintf(output, "%i %i %d\n", n, m, maxWeight);
+	// fprintf(output, "%i %i %d\n", n, m, maxWeight);
 	for(unsigned int i = 0; i < m; i++){
-		fprintf(output, "%i %i %d\n", edges[i].v1, edges[i].v2, edges[i].w);
+		//fprintf(output, "%i %i %d\n", edges[i].v1, edges[i].v2, edges[i].w);
+		output << edges[i].v1 << " " << edges[i].v2 << " " << edges[i].w << "\n";
 	}
 
-	fclose(output);
+	//fclose(output);
+	output.close();
 	free(edges);
 
 	return 0;
