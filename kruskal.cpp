@@ -1,16 +1,5 @@
-// Currently takes exGraph1.txt as input
-// gcc -fopenmp kruskal.c -o kruskalc -std=c99
+// g++ -fopenmp -o kruskal kruskal.cpp -std=c++11
 // ./kruskalc -f exGraph1.txt
-/*#include <assert.h>
-#include <omp.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
-#include <time.h>*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -31,6 +20,7 @@ int m; // num of edges
 int maxWeight;
 edge *resultList;
 edge *edgeList;
+double globalTime = 0;
 
 int find(int* parentRepList, int vertToFind) {
     if(parentRepList == NULL) {
@@ -105,20 +95,56 @@ void merge(edge *edgeList, int start, int mid, int end) {
     }
 }
 
+void mergeSortSeq(edge *edgeList, int start, int end) {
+    using namespace std::chrono;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration<double> dsec;
+    if(start >= end-1) {
+        return;
+    }
+    int mid = ((end-2)+start)/2;
+
+    mergeSortSeq(edgeList, start, mid+1);
+    mergeSortSeq(edgeList, mid+1, end);
+    auto compute_start = Clock::now();
+    merge(edgeList, start, mid, end);
+    globalTime += duration_cast<dsec>(Clock::now() - compute_start).count();
+}
+
+// For parallelizing mergeSort using tasks, we adapted structure of
+// code from slide 7 of this Oregon State University lecture
+// https://web.engr.oregonstate.edu/~mjb/cs575/Handouts/tasks.1pp.pdf
+// (Namely just using tasks to do 2 things at once and single to ensure
+// only 1 thread enqueues the tasks.)
 void mergeSort(edge *edgeList, int start, int end) {
+    using namespace std::chrono;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration<double> dsec;
     // end is exclusive
     if(start >= end-1) {
         return;
     }
     int mid = ((end-2)+start)/2;
 
-    // start 2 parallel tasks to sort 2 halves
-    #pragma omp task
-    mergeSort(edgeList, start, mid+1);
-    #pragma omp task
-    mergeSort(edgeList, mid+1, end);
-    #pragma omp taskwait
+    omp_set_num_threads(1);
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            // start 2 parallel tasks to sort 2 halves
+            #pragma omp task
+            {
+                mergeSort(edgeList, start, mid+1);
+            }
+            #pragma omp task
+            {
+                mergeSort(edgeList, mid+1, end);
+            }
+        }
+    }
+    auto compute_start = Clock::now();
     merge(edgeList, start, mid, end); // merge start to mid WITH mid to end
+    globalTime += duration_cast<dsec>(Clock::now() - compute_start).count();
 }
 
 void readInput(char *inputFilename) {
@@ -158,7 +184,6 @@ void readInput(char *inputFilename) {
         edgeList[indexOfEdgeList].w = edgeList[indexOfEdgeList-1].w;
         indexOfEdgeList += 1;
     }
-    printf("reached here");
 
 }
 
@@ -187,9 +212,12 @@ void writeOutput() {
 
 
 int main(int argc, char *argv[]) {
+    using namespace std::chrono;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration<double> dsec;
+
     int opt;
     char *inputFilename = NULL;
-    printf("before while");
     while((opt = getopt(argc, argv, "f:")) != -1){
         switch(opt){
             case 'f':
@@ -206,11 +234,12 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printf("b4 readinput");
     readInput(inputFilename);
 
 
-
+    // start time
+    auto compute_start = Clock::now();
+    double compute_time = 0;
 
 
     // UNION FIND SET UP
@@ -235,17 +264,17 @@ int main(int argc, char *argv[]) {
     // RUN KRUSKAL
     resultList = (edge*)calloc((n-1), sizeof(edge));
 
-    // Sort edge list (length 2*m since including undirected edges)
-    //clock_t start = clock();
-    #pragma omp parallel
-    {
-        mergeSort(edgeList, 0, (2*m));
-    }
-    //clock_t end = clock();
-    //double timeTaken = (double)((end-start)/CLOCKS_PER_SEC);
-    //printf("Time taken %f", timeTaken);
-    printf("\nDone with merge sort\n");
+    // TIME MEASURE 1 (before meerge)
+    double time1 = duration_cast<dsec>(Clock::now() - compute_start).count();
+    printf("Time1: %lf.\n", time1);
 
+    // Sort edge list (length 2*m since including undirected edges)
+    mergeSort(edgeList, 0, (2*m));
+    //printf("\nDone with merge sort\n");
+
+    double time2 = duration_cast<dsec>(Clock::now() - compute_start).count();
+    printf("Time2: %lf.\n", time2);
+    printf("MergeTime: %lf.\n", globalTime);
 
     int numEdgesSoFar = 0;
     int i = 0;
@@ -270,7 +299,6 @@ int main(int argc, char *argv[]) {
         i+=1;
     }
 
-    printf("DONE w kruskal loop\n");
 
     // Print out result MST
     /*printf("RESULT\n");
@@ -278,12 +306,17 @@ int main(int argc, char *argv[]) {
         printf("%d , %d , %d\n", resultList[j].u, resultList[j].v, resultList[j].w);
     }*/
 
+    // end time
+    compute_time += duration_cast<dsec>(Clock::now() - compute_start).count();
+    printf("Computation Time: %lf.\n", compute_time);
+
+
     // Write output to a file
     writeOutput();
-    /*free(edgeList);
+    free(edgeList);
     free(resultList);
     free(parentRepList);
-    free(depthAtVertList);*/
+    free(depthAtVertList);
 
 
     return 0;
